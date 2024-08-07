@@ -1,33 +1,41 @@
 package generate
 
 import (
-	"math/rand/v2"
+	"log"
 
-	"github.com/krishna-godoi/gopher-ipsum/ast"
-	"github.com/krishna-godoi/gopher-ipsum/token"
+	"github.com/krishna-godoi/gopher-maestro/ast"
+	"github.com/krishna-godoi/gopher-maestro/token"
 )
 
-func GenerateVarStatement() *ast.VarStatement {
-	t := token.Token{
+func GenerateVarStatement(args string) *ast.VarStatement {
+	tok := token.Token{
 		Type:    token.VAR,
 		Literal: "var",
 	}
 
-	varNode := ast.VarStatement{
-		Token:   t,
-		Context: "root",
-		Name: ast.Identifier{
-			Token: token.IDENT,
-			Name:  GenerateString(),
-		},
+	parsedArgs := ParseArgs(args)
+
+	if len(parsedArgs) != 3 {
+		log.Fatal("Wrong number of arguments passed to VAR")
 	}
 
-	i := rand.IntN(2)
+	if len(parsedArgs[1]) == 0 && len(parsedArgs[2]) == 0 {
+		log.Fatal("The type and value of a VAR can't both be empty")
+	}
 
-	if i == 0 {
-		varNode.Value = GenerateString()
+	varNode := ast.VarStatement{
+		Token: tok,
+		Type:  parsedArgs[1],
+		Identifier: ast.Identifier{
+			Token: token.IDENT,
+		},
+		Value: parsedArgs[2],
+	}
+
+	if len(parsedArgs[0]) > 0 {
+		varNode.Identifier.Name = parsedArgs[0]
 	} else {
-		varNode.Value = GenerateMathExpr(0)
+		varNode.Identifier.Name = GenerateString()
 	}
 
 	return &varNode

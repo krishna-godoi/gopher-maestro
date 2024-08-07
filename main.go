@@ -3,12 +3,12 @@ package main
 import (
 	"fmt"
 
-	"github.com/krishna-godoi/gopher-ipsum/generate"
+	"github.com/krishna-godoi/gopher-maestro/generate"
 )
 
 func main() {
-	p := generate.GenerateRoot()
-	for i := range p.Statements {
-		fmt.Println(p.Statements[i])
-	}
+	genString := "FOR(VAR(i,,0),i<10, i++)[VAR(myVar,,15)]"
+
+	fmt.Println(generate.CallGenerator(genString))
 }
+

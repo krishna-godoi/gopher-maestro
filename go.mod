@@ -1,3 +1,3 @@
-module github.com/krishna-godoi/gopher-ipsum
+module github.com/krishna-godoi/gopher-maestro
 
 go 1.22.5

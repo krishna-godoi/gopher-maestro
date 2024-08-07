@@ -1,11 +1,11 @@
 package generate
 
 import (
-	"github.com/krishna-godoi/gopher-ipsum/ast"
-	"github.com/krishna-godoi/gopher-ipsum/token"
+	"github.com/krishna-godoi/gopher-maestro/ast"
+	"github.com/krishna-godoi/gopher-maestro/token"
 )
 
-func GenerateFuncStatement() *ast.FuncStatement {
+func GenerateFuncStatement(args, scope string) *ast.FuncStatement {
 	t := token.Token{
 		Type:    token.FUNC,
 		Literal: "func",
@@ -18,10 +18,6 @@ func GenerateFuncStatement() *ast.FuncStatement {
 			Token: token.IDENT,
 			Name:  GenerateString(),
 		},
-	}
-
-	for i := 0; i < 2; i++ {
-		funcNode.Children = append(funcNode.Children, GenerateVarStatement())
 	}
 
 	return &funcNode

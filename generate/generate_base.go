@@ -6,48 +6,54 @@ import (
 	"math/rand/v2"
 	"os"
 	"strconv"
+	"strings"
 
-	"github.com/krishna-godoi/gopher-ipsum/ast"
-	"github.com/krishna-godoi/gopher-ipsum/token"
+	"github.com/krishna-godoi/gopher-maestro/ast"
 )
 
-type PNode struct {
-	Token  string
-	Weight float64
-}
+func CallGenerator(str string) ast.Statement {
+	var stmt ast.Statement
+	var genKey, args, scope string
 
-func GenerateRoot() ast.Program {
-	l := 2
-	possible := []PNode{
-		{Token: token.FUNC, Weight: 1.00},
-		{Token: token.VAR, Weight: 0.35},
-	}
+	argsStart := strings.Index(str, "(")
+	scopeStart := strings.Index(str, "[")
 
-	tree := ast.Program{}
+	if argsStart == -1 && scopeStart == -1 {
+		genKey = str
+	} else if argsStart == -1 {
+		genKey = str[:scopeStart]
+		scope = str[scopeStart+1 : len(str)-1]
+	} else {
+		genKey = str[:argsStart]
 
-	for l > 0 {
-		idx := rand.IntN(l)
-		chance := rand.Float64()
+		argsEnd := strings.Index(str, ")")
+		args = str[argsStart+1 : argsEnd]
 
-		possible[idx].Weight = max(0, possible[idx].Weight-chance)
-
-		if possible[idx].Weight == 0 {
-			possible[idx], possible[l-1] = possible[l-1], possible[idx]
-			l = l - 1
-		} else {
-			tree.Statements = append(tree.Statements, GenerateNode(possible[idx].Token))
+		if scopeStart != -1 {
+			scope = str[scopeStart+1 : len(str)-1]
 		}
 	}
 
-	return tree
+	switch genKey {
+	case "VAR":
+		stmt = GenerateVarStatement(args)
+	case "FUNC":
+		stmt = GenerateFuncStatement(args, scope)
+	case "FOR":
+		stmt = GenerateForStatement(args, scope)
+	}
+
+	return stmt
 }
 
-func GenerateNode(t string) ast.Statement {
-	if t == token.FUNC {
-		return GenerateFuncStatement()
-	} else {
-		return GenerateVarStatement()
+func ParseArgs(args string) []string {
+	parsedArgs := strings.Split(args, ",")
+
+	for i := range parsedArgs {
+		parsedArgs[i] = strings.TrimSpace(parsedArgs[i])
 	}
+
+	return parsedArgs
 }
 
 func GenerateString() string {

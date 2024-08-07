@@ -1,6 +1,6 @@
 package ast
 
-import "github.com/krishna-godoi/gopher-ipsum/token"
+import "github.com/krishna-godoi/gopher-maestro/token"
 
 type Node interface {
 	Literal() string
@@ -26,10 +26,11 @@ func (p *Program) Literal() string {
 }
 
 type VarStatement struct {
-	Token   token.Token
-	Context string
-	Name    Identifier
-	Value   string
+	Token      token.Token
+	Type       string
+	Context    string
+	Identifier Identifier
+	Value      string
 }
 
 func (vs *VarStatement) statementNode() {}
@@ -55,5 +56,19 @@ type FuncStatement struct {
 
 func (vs *FuncStatement) statementNode() {}
 func (vs *FuncStatement) Literal() string {
+	return vs.Token.Literal
+}
+
+type ForStatement struct {
+	Token     token.Token
+	Context   string
+	Variable  *VarStatement
+	Condition string
+	Increment string
+	Scope     []Statement
+}
+
+func (vs *ForStatement) statementNode() {}
+func (vs *ForStatement) Literal() string {
 	return vs.Token.Literal
 }

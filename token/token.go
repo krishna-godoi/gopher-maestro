@@ -7,6 +7,7 @@ type Token struct {
 
 const (
 	FUNC    = "FUNC"
+	FOR    = "FOR"
 	VAR     = "VAR"
 	IDENT   = "IDENT"
 	TYPE    = "TYPE"
