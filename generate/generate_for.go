@@ -20,11 +20,13 @@ func GenerateForStatement(args, scope string) *ast.ForStatement {
 	}
 
 	parsedArgs := ParseArgs(args)
+
 	if len(parsedArgs) != 3 {
 		log.Fatal("Wrong number or args passed to FOR")
 	}
 
-	parsedScope := strings.Split(scope, ",")
+	parsedScope := ParseArgs(scope)
+
 	if len(parsedScope) > 0 {
 		for i := range parsedScope {
 			scopeItem := strings.TrimSpace(parsedScope[i])
@@ -35,7 +37,8 @@ func GenerateForStatement(args, scope string) *ast.ForStatement {
 	}
 
 	if len(parsedArgs[0]) > 0 {
-		forNode.Variable = GenerateVarStatement(parsedArgs[0])
+		_, args, _ := SplitGeneratorStatement(parsedArgs[0])
+		forNode.Variable = GenerateVarStatement(args)
 	}
 
 	if len(parsedArgs[1]) > 0 {
@@ -43,7 +46,7 @@ func GenerateForStatement(args, scope string) *ast.ForStatement {
 	}
 
 	if len(parsedArgs[2]) > 0 {
-		forNode.Increment = parsedArgs[1]
+		forNode.Increment = parsedArgs[2]
 	}
 
 	return &forNode

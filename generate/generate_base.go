@@ -2,6 +2,7 @@ package generate
 
 import (
 	"bufio"
+	"log"
 	"math"
 	"math/rand/v2"
 	"os"
@@ -13,26 +14,8 @@ import (
 
 func CallGenerator(str string) ast.Statement {
 	var stmt ast.Statement
-	var genKey, args, scope string
 
-	argsStart := strings.Index(str, "(")
-	scopeStart := strings.Index(str, "[")
-
-	if argsStart == -1 && scopeStart == -1 {
-		genKey = str
-	} else if argsStart == -1 {
-		genKey = str[:scopeStart]
-		scope = str[scopeStart+1 : len(str)-1]
-	} else {
-		genKey = str[:argsStart]
-
-		argsEnd := strings.Index(str, ")")
-		args = str[argsStart+1 : argsEnd]
-
-		if scopeStart != -1 {
-			scope = str[scopeStart+1 : len(str)-1]
-		}
-	}
+	genKey, args, scope := SplitGeneratorStatement(str)
 
 	switch genKey {
 	case "VAR":
@@ -46,8 +29,57 @@ func CallGenerator(str string) ast.Statement {
 	return stmt
 }
 
+func SplitGeneratorStatement(str string) (genKey, args, scope string) {
+	argsStart, argsEnd, scopeStart, scopeEnd := -1, -1, -1, -1
+
+	for i := range str {
+		if str[i] == '(' && argsStart == -1 {
+			argsStart = i
+			argsEnd = FindMatchingParen(str, i)
+		}
+
+		if str[i] == '[' && scopeStart == -1 {
+			scopeStart = i
+			scopeEnd = FindMatchingParen(str, i)
+		}
+
+	}
+
+	if argsStart == -1 && scopeStart == -1 {
+		genKey = str
+	} else if argsStart == -1 {
+		genKey = str[:scopeStart]
+		scope = str[scopeStart+1 : len(str)-1]
+	} else {
+		genKey = str[:argsStart]
+
+		args = str[argsStart+1 : argsEnd]
+
+		if scopeStart != -1 {
+			scope = str[scopeStart+1 : scopeEnd]
+		}
+	}
+
+	return
+}
+
 func ParseArgs(args string) []string {
-	parsedArgs := strings.Split(args, ",")
+	parsedArgs := []string{}
+	lastIdx := 0
+
+	for i := 0; i < len(args); i++ {
+		if args[i] == '(' || args[i] == '[' {
+			i = FindMatchingParen(args, i)
+			continue
+		}
+
+		if args[i] == ',' {
+			parsedArgs = append(parsedArgs, args[lastIdx:i])
+			lastIdx = i + 1
+		}
+	}
+
+	parsedArgs = append(parsedArgs, args[lastIdx:])
 
 	for i := range parsedArgs {
 		parsedArgs[i] = strings.TrimSpace(parsedArgs[i])
@@ -112,4 +144,33 @@ func GenerateMathExpr(depth int) string {
 
 func GenerateInt() string {
 	return strconv.Itoa(rand.IntN(101))
+}
+
+var matching = map[byte]byte{
+	')': '(',
+	']': '[',
+}
+
+func FindMatchingParen(str string, op int) int {
+	matches := []byte{}
+
+	for i := op; i < len(str); i++ {
+		char := str[i]
+
+		if char == '(' || char == '[' {
+			matches = append(matches, char)
+		}
+
+		if char == ')' || char == ']' {
+			if len(matches) == 1 {
+				return i
+			}
+
+			matches = matches[:len(matches)-1]
+		}
+	}
+
+	log.Fatal("No matching close parentheses found")
+
+	return -1
 }
