@@ -36,16 +36,24 @@ func GenerateForStatement(args, scope string) *ast.ForStatement {
 		}
 	}
 
-	if len(parsedArgs[0]) > 0 {
+	lVar, lCond, lInc := len(parsedArgs[0]), len(parsedArgs[1]), len(parsedArgs[2])
+
+	if lVar > 0 || lInc > 0 {
+		if lVar == 0 || lInc == 0 || lCond == 0 {
+			log.Fatal("Illegal boomer loop setup")
+		}
+	}
+
+	if lVar > 0 {
 		_, args, _ := SplitGeneratorStatement(parsedArgs[0])
 		forNode.Variable = GenerateVarStatement(args)
 	}
 
-	if len(parsedArgs[1]) > 0 {
+	if lCond > 0 {
 		forNode.Condition = parsedArgs[1]
 	}
 
-	if len(parsedArgs[2]) > 0 {
+	if lInc > 0 {
 		forNode.Increment = parsedArgs[2]
 	}
 
