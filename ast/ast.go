@@ -72,3 +72,26 @@ func (vs *ForStatement) statementNode() {}
 func (vs *ForStatement) Literal() string {
 	return vs.Token.Literal
 }
+
+type IfElse struct {
+	Token        token.Token
+	Context      string
+	Variable     Statement
+	Condition    string
+	Alternatives []Statement
+	Scope        []Statement
+}
+
+type IfStatement IfElse
+
+func (vs *IfStatement) statementNode() {}
+func (vs *IfStatement) Literal() string {
+	return vs.Token.Literal
+}
+
+type ElseStatement IfElse
+
+func (vs *ElseStatement) statementNode() {}
+func (vs *ElseStatement) Literal() string {
+	return vs.Token.Literal
+}

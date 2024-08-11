@@ -24,6 +24,8 @@ func CallGenerator(str string) ast.Statement {
 		stmt = GenerateFuncStatement(args, scope)
 	case "FOR":
 		stmt = GenerateForStatement(args, scope)
+	case "IF", "ELSE":
+		stmt = GenerateIfStatement(args, scope)
 	}
 
 	return stmt
@@ -32,17 +34,21 @@ func CallGenerator(str string) ast.Statement {
 func SplitGeneratorStatement(str string) (genKey, args, scope string) {
 	argsStart, argsEnd, scopeStart, scopeEnd := -1, -1, -1, -1
 
-	for i := range str {
+	i := 0
+	for i < len(str) {
 		if str[i] == '(' && argsStart == -1 {
 			argsStart = i
 			argsEnd = FindMatchingParen(str, i)
+			i = argsEnd
 		}
 
 		if str[i] == '[' && scopeStart == -1 {
 			scopeStart = i
 			scopeEnd = FindMatchingParen(str, i)
+			i = scopeEnd
 		}
 
+		i++
 	}
 
 	if argsStart == -1 && scopeStart == -1 {

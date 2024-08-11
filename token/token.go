@@ -1,14 +1,16 @@
 package token
 
 type Token struct {
-	Type  string
+	Type    string
 	Literal string
 }
 
 const (
 	FUNC    = "FUNC"
-	FOR    = "FOR"
+	FOR     = "FOR"
 	VAR     = "VAR"
+	IF      = "IF"
+	ELSE    = "ELSE"
 	IDENT   = "IDENT"
 	TYPE    = "TYPE"
 	NEWLINE = "\r\n"
